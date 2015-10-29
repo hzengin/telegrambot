@@ -30,7 +30,7 @@ object Requests {
 
       def read(v: JsValue) = ForceReply() // TODO: implement this unnecessary feature
     }
-    
+
     implicit object sendPhotoRequestFormat extends JsonFormat[SendPhotoRequest] {
       def write(r: SendPhotoRequest) = {
         JsObject(
@@ -42,8 +42,26 @@ object Requests {
         )
       }
 
-      def read(v: JsValue) = SendPhotoRequest(Left(""), Right(""))
+      def read(v: JsValue) = SendPhotoRequest(Left(""), Right("")) // TODO: implement this unnecessary feature
     }
+
+    implicit object sendAudioRequestFormat extends JsonFormat[SendAudioRequest] {
+      def write(r: SendAudioRequest) = {
+        JsObject(
+          "chat_id" -> r.chatId.toJson,
+          "audio" -> r.audio.right.getOrElse("").toJson,
+          "duration" -> r.duration.toJson,
+          "performer" -> r.performer.toJson,
+          "title" -> r.title.toJson,
+          "reply_to_message_id" -> r.replyTo.toJson,
+          "reply_markup" -> r.replyMarkup.toJson
+        )
+      }
+
+      def read(v: JsValue) = SendAudioRequest(Left(""), Right("")) // TODO: implement this unnecessary feature
+    }
+
+
     implicit val sendMessageRequestFormat= jsonFormat(SendMessageRequest, "chat_id", "text", "parse_mode", "disable_web_page_preview", "reply_to_message_id", "reply_markup")
     implicit val forwardMessageRequestFormat = jsonFormat(ForwardMessageRequest, "chat_id", "from_chat_id", "message_id")
 
@@ -78,6 +96,16 @@ object Requests {
     chatId: Either[String, Int],
     photo: Either[InputFile, String],
     caption: Option[String] = None,
+    replyTo: Option[Int] = None,
+    replyMarkup: Option[ReplyMarkup] = None
+  )
+
+  case class SendAudioRequest(
+    chatId: Either[String, Int],
+    audio: Either[InputFile, String],
+    duration: Option[Int] = None,
+    performer: Option[String] = None,
+    title: Option[String] = None,
     replyTo: Option[Int] = None,
     replyMarkup: Option[ReplyMarkup] = None
   )
