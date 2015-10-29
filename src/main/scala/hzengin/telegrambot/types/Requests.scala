@@ -61,6 +61,18 @@ object Requests {
       def read(v: JsValue) = SendAudioRequest(Left(""), Right("")) // TODO: implement this unnecessary feature
     }
 
+    implicit object sendDocumentRequestFormat extends JsonFormat[SendDocumentRequest] {
+      def write(r: SendDocumentRequest) = {
+        JsObject(
+          "chat_id" -> r.chatId.toJson,
+          "document" -> r.document.right.getOrElse("").toJson,
+          "reply_to_message_id" -> r.replyTo.toJson,
+          "reply_markup" -> r.replyMarkup.toJson
+        )
+      }
+      def read(v: JsValue) = SendDocumentRequest(Left(""), Right("")) // TODO: implement this unnecessary feature
+    }
+
 
     implicit val sendMessageRequestFormat= jsonFormat(SendMessageRequest, "chat_id", "text", "parse_mode", "disable_web_page_preview", "reply_to_message_id", "reply_markup")
     implicit val forwardMessageRequestFormat = jsonFormat(ForwardMessageRequest, "chat_id", "from_chat_id", "message_id")
@@ -106,6 +118,13 @@ object Requests {
     duration: Option[Int] = None,
     performer: Option[String] = None,
     title: Option[String] = None,
+    replyTo: Option[Int] = None,
+    replyMarkup: Option[ReplyMarkup] = None
+  )
+
+  case class SendDocumentRequest(
+    chatId: Either[String, Int],
+    document: Either[InputFile, String],
     replyTo: Option[Int] = None,
     replyMarkup: Option[ReplyMarkup] = None
   )

@@ -147,5 +147,39 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
       }
   }
 
+  def sendDocument(request: SendDocumentRequest): Future[Option[Message]] = {
+    import hzengin.telegrambot.types.Requests.JsonSupport._
+
+    val pipeline = sendReceive ~> unmarshal[Result[Message]]
+    request match {
+      case SendDocumentRequest(chatId, Left(document), replyTo, _) =>
+        val fileBodyPart = buildFileBodyPart("document", document)
+        var formData = Seq(fileBodyPart)
+        formData = formData ++ Seq(chatId match {
+          case Right(chatId) => buildParameterBodyPart("chat_id", chatId.toString)
+          case Left(chatId) => buildParameterBodyPart("chat_id", chatId)
+        })
+
+        replyTo match {
+          case Some(replyTo) => formData = formData ++ Seq(buildParameterBodyPart("reply_to_message_id", replyTo.toString))
+          case None =>
+        }
+
+        pipeline(Post(apiUrl + "sendDocument", MultipartFormData(formData))) map {
+          case Result(true, message) => Some(message)
+        } recover {
+          case e => println(e); None
+        }
+
+      case SendDocumentRequest(_, Right(fileId), _, _) =>
+        pipeline(Post(apiUrl + "sendDocument", sendDocumentRequestFormat.write(request))) map {
+          case Result(true, message) => Some(message)
+        } recover {
+          case e => None
+        }
+    }
+
+  }
+
 
 }
