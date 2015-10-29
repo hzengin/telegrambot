@@ -14,8 +14,6 @@ object TypesJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
   implicit val contactFormat = jsonFormat(Contact, "phone_number", "first_name", "last_name", "user_id")
   implicit val locationFormat = jsonFormat(Location, "longitude", "latitude")
   implicit val userProfilePhotosFormat = jsonFormat(UserProfilePhotos, "total_count", "photos")
-  implicit val fileFormat = jsonFormat(File, "file_id", "file_size", "file_path")
-  implicit val replyKeyboardMarkup = jsonFormat(ReplyKeyboardMarkup, "keyboard", "resize_keyboard", "one_time_keyboard", "selective")
   implicit val groupChatFormat = jsonFormat(GroupChat, "id", "title")
   implicit val messageFormat: JsonFormat[Message] = lazyFormat(
     jsonFormat(Message,
@@ -43,4 +41,5 @@ object TypesJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
       "group_chat_created"))
   implicit val updateFormat = jsonFormat(Update, "update_id", "message")
   implicit def resultFormat[T: JsonFormat] = jsonFormat(Result.apply[T], "ok", "result")
+
 }
