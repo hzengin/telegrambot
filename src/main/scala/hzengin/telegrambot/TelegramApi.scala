@@ -56,6 +56,45 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
     }
   }
 
+  def sendChatAction(request: SendChatActionRequest) = {
+    import hzengin.telegrambot.types.Requests.JsonSupport._
+    val pipeline = sendReceive ~> unmarshal[Result[Boolean]]
+    pipeline (Post(apiUrl + "sendChatAction", request))
+  }
+
+  def sendLocation(request: SendLocationRequest): Future[Option[Message]] = {
+    import hzengin.telegrambot.types.Requests.JsonSupport._
+    val pipeline = sendReceive ~> unmarshal[Result[Message]]
+    pipeline (Post(apiUrl + "sendLocation", request)) map {
+      case Result(true, message) => println(message); Some(message)
+    } recover {
+      case e => println(e); None
+    }
+  }
+
+
+  def getFile(id: String): Future[Option[File]] = {
+    import hzengin.telegrambot.types.Requests.JsonSupport._
+    val pipeline = sendReceive  ~> unmarshal[Result[File]]
+    pipeline(Get(apiUrl + "getFile?file_id=" + id)) map {
+      case Result(true, file) => Some(file)
+      case _ => None
+    } recover {
+      case _ => None
+    }
+  }
+
+  def getUserProfilePhotos(userId: Int): Future[Option[UserProfilePhotos]] = {
+    import hzengin.telegrambot.types.Requests.JsonSupport._
+    val pipeline = sendReceive  ~> unmarshal[Result[UserProfilePhotos]]
+    pipeline(Get(apiUrl + s"getUserProfilePhotos?user_id=$userId")) map {
+      case Result(true, photos) => Some(photos)
+      case _ => None
+    } recover {
+      case _ => None
+    }
+  }
+
   def forwardMessage(request: ForwardMessageRequest): Future[Option[Message]] = {
     import hzengin.telegrambot.types.Requests.JsonSupport._
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
@@ -178,8 +217,39 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
           case e => None
         }
     }
-
   }
 
+  def sendSticker(request: SendStickerRequest): Future[Option[Message]] = {
+    import hzengin.telegrambot.types.Requests.JsonSupport._
+
+    val pipeline = sendReceive ~> unmarshal[Result[Message]]
+    request match {
+      case SendStickerRequest(chatId, Left(sticker), replyTo, _) =>
+        val fileBodyPart = buildFileBodyPart("sticker", sticker)
+        var formData = Seq(fileBodyPart)
+        formData = formData ++ Seq(chatId match {
+          case Right(chatId) => buildParameterBodyPart("chat_id", chatId.toString)
+          case Left(chatId) => buildParameterBodyPart("chat_id", chatId)
+        })
+
+        replyTo match {
+          case Some(replyTo) => formData = formData ++ Seq(buildParameterBodyPart("reply_to_message_id", replyTo.toString))
+          case None =>
+        }
+
+        pipeline(Post(apiUrl + "sendSticker", MultipartFormData(formData))) map {
+          case Result(true, message) => Some(message)
+        } recover {
+          case e => println(e); None
+        }
+
+      case SendStickerRequest(_, Right(fileId), _, _) =>
+        pipeline(Post(apiUrl + "sendSticker", sendStickerRequestFormat.write(request))) map {
+          case Result(true, message) => Some(message)
+        } recover {
+          case e => None
+        }
+    }
+  }
 
 }

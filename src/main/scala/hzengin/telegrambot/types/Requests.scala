@@ -73,11 +73,24 @@ object Requests {
       def read(v: JsValue) = SendDocumentRequest(Left(""), Right("")) // TODO: implement this unnecessary feature
     }
 
+    implicit object sendStickerRequestFormat extends JsonFormat[SendStickerRequest] {
+      def write(r: SendStickerRequest) = {
+        JsObject(
+          "chat_id" -> r.chatId.toJson,
+          "sticker" -> r.sticker.right.getOrElse("").toJson,
+          "reply_to_message_id" -> r.replyTo.toJson,
+          "reply_markup" -> r.replyMarkup.toJson
+        )
+      }
+      def read(v: JsValue) = SendStickerRequest(Left(""), Right("")) // TODO: implement this unnecessary feature
+    }
+
+
 
     implicit val sendMessageRequestFormat= jsonFormat(SendMessageRequest, "chat_id", "text", "parse_mode", "disable_web_page_preview", "reply_to_message_id", "reply_markup")
     implicit val forwardMessageRequestFormat = jsonFormat(ForwardMessageRequest, "chat_id", "from_chat_id", "message_id")
-
-    (SendPhotoRequest, "chat_id", "photo", "caption", "reply_to_message_id", "reply_markup")
+    implicit val sendChatActionRequestFormat = jsonFormat(SendChatActionRequest, "chat_id", "action")
+    implicit val sendLocationRequestFormat = jsonFormat(SendLocationRequest, "chat_id", "latitude", "longitude", "reply_to_message_id", "reply_markup")
   }
 
   object ReplyMarkups{
@@ -125,6 +138,26 @@ object Requests {
   case class SendDocumentRequest(
     chatId: Either[String, Int],
     document: Either[InputFile, String],
+    replyTo: Option[Int] = None,
+    replyMarkup: Option[ReplyMarkup] = None
+  )
+
+  case class SendStickerRequest(
+    chatId: Either[String, Int],
+    sticker: Either[InputFile, String],
+    replyTo: Option[Int] = None,
+    replyMarkup: Option[ReplyMarkup] = None
+  )
+
+  case class SendChatActionRequest(
+    chatId: Either[String, Int],
+    action: String
+  )
+
+  case class SendLocationRequest(
+    chatId: Either[String, Int],
+    latitude: Float,
+    longitude: Float,
     replyTo: Option[Int] = None,
     replyMarkup: Option[ReplyMarkup] = None
   )

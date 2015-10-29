@@ -4,6 +4,7 @@ import spray.httpx.SprayJsonSupport
 import spray.json._
 
 object TypesJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
+  implicit val fileFormat = jsonFormat(File, "file_id", "file_size", "file_path")
   implicit val photoSizeFormat = jsonFormat(PhotoSize, "file_id", "width", "height", "file_size")
   implicit val userFormat = jsonFormat(User, "id", "first_name", "last_name", "username")
   implicit val audioFormat = jsonFormat(Audio, "file_id", "duration", "performer", "title", "mime_type", "file_size")
