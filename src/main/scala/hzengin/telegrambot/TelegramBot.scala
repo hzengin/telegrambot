@@ -7,8 +7,7 @@ import akka.io.IO
 import hzengin.telegrambot.types.Update
 import hzengin.telegrambot.webhook._
 
-class TelegramBot {
-  val token: String = BotConfig.token
+class TelegramBot(val token: String) {
   val updateHandler: UpdateHandler = new UpdateHandler()
   implicit val system = ActorSystem("telegrambot-system")
   val telegramApi:TelegramApi = new TelegramApi(token, system)
