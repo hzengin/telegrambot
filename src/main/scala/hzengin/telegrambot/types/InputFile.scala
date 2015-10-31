@@ -1,6 +1,7 @@
 package hzengin.telegrambot.types
 
-import java.io.{FileInputStream, InputStream, File}
+import java.io.{FileInputStream, InputStream}
+import java.io.{File => JFile}
 
 trait InputFile {
   val name: String
@@ -10,9 +11,9 @@ trait InputFile {
 
 object InputFile {
 
-  def apply(filePath: String): InputFile = apply(new File(filePath))
+  def apply(filePath: String): InputFile = apply(new JFile(filePath))
 
-  def apply(file: File): InputFile = {
+  def apply(file: JFile): InputFile = {
     apply(file.getName, new FileInputStream(file))
   }
 
