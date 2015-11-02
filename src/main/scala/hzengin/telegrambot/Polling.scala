@@ -7,7 +7,7 @@ import hzengin.telegrambot.types._
 import scala.language.postfixOps
 
 
-class PollingScheduler(val updateHandler: UpdateHandler, val telegramApi: TelegramApi, implicit val system: ActorSystem) extends Actor {
+class PollingScheduler(val updateHandler: UpdateHandler, val telegramApi: TelegramApi)(implicit val system: ActorSystem) extends Actor {
   case class Tick()
   import context.dispatcher
   def interval = 2 seconds
@@ -33,6 +33,6 @@ trait Polling {
   val telegramApi: TelegramApi
 
   def run() = {
-    system.actorOf(Props(new PollingScheduler(updateHandler, telegramApi, system)), "scheduleactor")
+    system.actorOf(Props(new PollingScheduler(updateHandler, telegramApi)), "scheduleactor")
   }
 }
