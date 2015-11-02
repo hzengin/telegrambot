@@ -3,6 +3,10 @@ package hzengin.telegrambot
 import hzengin.telegrambot.types.{Update, User, Message, InputFile}
 import hzengin.telegrambot.types.requests.{SendMessageRequest, SendPhotoRequest}
 import hzengin.telegrambot.webhook._
+import hzengin.telegrambot.utils._
+
+import akka.actor.{ActorSystem, Props}
+import scala.concurrent.duration.FiniteDuration
 
 trait Declerative {
   val updateHandler: UpdateHandler
@@ -36,6 +40,16 @@ trait Declerative {
       ),
       actionWrapper(action)
     )
+  }
+
+  def sendTo(text: String, userId: Int) = {
+    telegramApi.sendMessage(
+      SendMessageRequest(Right(userId), text)
+    )
+  }
+
+  def sendTo(text: String, groupChat: String) = {
+
   }
 
   def send(text: String)(implicit message: Message) = {
@@ -72,6 +86,10 @@ trait Declerative {
         case Right(groupChat) => SendMessageRequest(Left(groupChat.id), text, replyTo = Some(message.id))
       }
     )
+  }
+
+  def every(interval: FiniteDuration)(action: => Unit)(implicit system: ActorSystem) = {
+    system.actorOf(Props(new PeriodicActor(interval, action)))
   }
 
 }
