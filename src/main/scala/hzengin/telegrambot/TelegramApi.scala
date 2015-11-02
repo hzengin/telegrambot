@@ -1,8 +1,9 @@
 package hzengin.telegrambot
 
+import hzengin.telegrambot.types.requests._
 import hzengin.telegrambot.types._
-import hzengin.telegrambot.types.TypesJsonSupport._
-import hzengin.telegrambot.types.Requests._
+
+import hzengin.telegrambot.types.requests.RequestsJsonSupport._
 
 import scala.util.{ Success, Failure }
 import scala.concurrent.Future
@@ -14,6 +15,8 @@ import spray.http.HttpEntity._
 import spray.http.HttpEntity
 
 class TelegramApi(token: String, implicit val system: ActorSystem) {
+  import hzengin.telegrambot.types.TypesJsonSupport._
+
   private val apiUrl = s"https://api.telegram.org/bot$token/"
 
   private def buildFileBodyPart(key: String, file: InputFile) = {
@@ -47,7 +50,6 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def sendMessage(request: SendMessageRequest): Future[Option[Message]] = {
-    import hzengin.telegrambot.types.Requests.JsonSupport._
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
     pipeline (Post(apiUrl + "sendMessage", request)) map {
       case Result(true, message) => Some(message)
@@ -57,13 +59,12 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def sendChatAction(request: SendChatActionRequest) = {
-    import hzengin.telegrambot.types.Requests.JsonSupport._
     val pipeline = sendReceive ~> unmarshal[Result[Boolean]]
     pipeline (Post(apiUrl + "sendChatAction", request))
   }
 
   def sendLocation(request: SendLocationRequest): Future[Option[Message]] = {
-    import hzengin.telegrambot.types.Requests.JsonSupport._
+
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
     pipeline (Post(apiUrl + "sendLocation", request)) map {
       case Result(true, message) => println(message); Some(message)
@@ -74,7 +75,7 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
 
 
   def getFile(id: String): Future[Option[File]] = {
-    import hzengin.telegrambot.types.Requests.JsonSupport._
+
     val pipeline = sendReceive  ~> unmarshal[Result[File]]
     pipeline(Get(apiUrl + "getFile?file_id=" + id)) map {
       case Result(true, file) => Some(file)
@@ -85,7 +86,7 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def getUserProfilePhotos(userId: Int): Future[Option[UserProfilePhotos]] = {
-    import hzengin.telegrambot.types.Requests.JsonSupport._
+
     val pipeline = sendReceive  ~> unmarshal[Result[UserProfilePhotos]]
     pipeline(Get(apiUrl + s"getUserProfilePhotos?user_id=$userId")) map {
       case Result(true, photos) => Some(photos)
@@ -96,7 +97,7 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def forwardMessage(request: ForwardMessageRequest): Future[Option[Message]] = {
-    import hzengin.telegrambot.types.Requests.JsonSupport._
+
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
     pipeline (Post(apiUrl + "forwardMessage", request)) map {
       case Result(true, message) => Some(message)
@@ -106,7 +107,7 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def sendAudio(request: SendAudioRequest): Future[Option[Message]] = {
-    import hzengin.telegrambot.types.Requests.JsonSupport._
+
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
     request match {
       case SendAudioRequest(chatId, Left(audio), duration, performer, title, replyTo, _) =>
@@ -139,7 +140,7 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
         }
 
       case SendAudioRequest(chatId, Right(fileId), _, _, _, _, _) =>
-        import hzengin.telegrambot.types.Requests.JsonSupport.sendAudioRequestFormat
+        import hzengin.telegrambot.types.requests.RequestsJsonSupport.sendAudioRequestFormat
         pipeline(Post(apiUrl + "sendAudio", sendAudioRequestFormat.write(request))) map {
           case Result(true, message) => Some(message)
         } recover {
@@ -149,7 +150,6 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def sendPhoto(request: SendPhotoRequest): Future[Option[Message]] = {
-    import hzengin.telegrambot.types.Requests.JsonSupport._
 
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
     request match {
@@ -177,7 +177,6 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
         }
 
       case SendPhotoRequest(_, Right(fileId), _, _, _) => // file must be already saved in telegram servers
-        import hzengin.telegrambot.types.Requests.JsonSupport.sendPhotoRequestFormat
         pipeline(Post(apiUrl + "sendPhoto", sendPhotoRequestFormat.write(request))) map {
           case Result(true, message) => Some(message)
         } recover {
@@ -187,7 +186,7 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def sendDocument(request: SendDocumentRequest): Future[Option[Message]] = {
-    import hzengin.telegrambot.types.Requests.JsonSupport._
+
 
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
     request match {
@@ -220,8 +219,6 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def sendSticker(request: SendStickerRequest): Future[Option[Message]] = {
-    import hzengin.telegrambot.types.Requests.JsonSupport._
-
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
     request match {
       case SendStickerRequest(chatId, Left(sticker), replyTo, _) =>
