@@ -49,7 +49,9 @@ trait Declerative {
   }
 
   def sendTo(text: String, groupChat: String) = {
-
+    telegramApi.sendMessage(
+      SendMessageRequest(Left(groupChat), text)
+    )
   }
 
   def send(text: String)(implicit message: Message) = {
