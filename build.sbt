@@ -1,6 +1,6 @@
-name := """scala-telegram-bot"""
+name := """telegrambot"""
 
-organization := "hzengin.telegrambot"
+organization := "io.zengin"
 
 version :=  "0.1-SNAPSHOT"
 
