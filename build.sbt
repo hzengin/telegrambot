@@ -2,6 +2,8 @@ name := """scala-telegram-bot"""
 
 organization := "hzengin.telegrambot"
 
+version :=  "0.1-SNAPSHOT"
+
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 
 scalaVersion := "2.11.7"
