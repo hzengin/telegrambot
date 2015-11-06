@@ -64,7 +64,6 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def sendLocation(request: SendLocationRequest): Future[Option[Message]] = {
-
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
     pipeline (Post(apiUrl + "sendLocation", request)) map {
       case Result(true, message) => println(message); Some(message)
@@ -75,7 +74,6 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
 
 
   def getFile(id: String): Future[Option[File]] = {
-
     val pipeline = sendReceive  ~> unmarshal[Result[File]]
     pipeline(Get(apiUrl + "getFile?file_id=" + id)) map {
       case Result(true, file) => Some(file)
@@ -86,7 +84,6 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def getUserProfilePhotos(userId: Int): Future[Option[UserProfilePhotos]] = {
-
     val pipeline = sendReceive  ~> unmarshal[Result[UserProfilePhotos]]
     pipeline(Get(apiUrl + s"getUserProfilePhotos?user_id=$userId")) map {
       case Result(true, photos) => Some(photos)
@@ -97,7 +94,6 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def forwardMessage(request: ForwardMessageRequest): Future[Option[Message]] = {
-
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
     pipeline (Post(apiUrl + "forwardMessage", request)) map {
       case Result(true, message) => Some(message)
@@ -107,7 +103,6 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def sendAudio(request: SendAudioRequest): Future[Option[Message]] = {
-
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
     request match {
       case SendAudioRequest(chatId, Left(audio), duration, performer, title, replyTo, _) =>
@@ -150,7 +145,6 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def sendPhoto(request: SendPhotoRequest): Future[Option[Message]] = {
-
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
     request match {
       case SendPhotoRequest(chatId, Left(photo), caption, replyTo, _) => // we need to upload file
@@ -186,8 +180,6 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
   def sendDocument(request: SendDocumentRequest): Future[Option[Message]] = {
-
-
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
     request match {
       case SendDocumentRequest(chatId, Left(document), replyTo, _) =>
