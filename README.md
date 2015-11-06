@@ -7,6 +7,7 @@
 - Fully asynchronous
 - [spray.io](spray.io) powered.
 - Declerative DSL for simple bot features
+- Strongly-typed 
 
 ## Supported Methods
 - getMe
