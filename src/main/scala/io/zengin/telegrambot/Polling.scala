@@ -10,7 +10,7 @@ import scala.language.postfixOps
 class PollingScheduler(val updateHandler: UpdateHandler, val telegramApi: TelegramApi)(implicit val system: ActorSystem) extends Actor {
   case class Tick()
   import context.dispatcher
-  def interval = 2 seconds
+  def interval = BotConfig.PollingConfig.interval seconds
   private var updateOffset = 0
 
   val tick = context.system.scheduler.schedule(0 millis, interval, self, Tick())

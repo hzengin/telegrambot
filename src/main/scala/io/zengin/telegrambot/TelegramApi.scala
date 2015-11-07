@@ -66,9 +66,9 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   def sendLocation(request: SendLocationRequest): Future[Option[Message]] = {
     val pipeline = sendReceive ~> unmarshal[Result[Message]]
     pipeline (Post(apiUrl + "sendLocation", request)) map {
-      case Result(true, message) => println(message); Some(message)
+      case Result(true, message) => Some(message)
     } recover {
-      case e => println(e); None
+      case e => None
     }
   }
 
@@ -167,7 +167,7 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
         pipeline(Post(apiUrl + "sendPhoto", MultipartFormData(formData))) map {
           case Result(true, message) => Some(message)
         } recover {
-          case e => println(e); None
+          case e => None
         }
 
       case SendPhotoRequest(_, Right(fileId), _, _, _) => // file must be already saved in telegram servers
@@ -198,7 +198,7 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
         pipeline(Post(apiUrl + "sendDocument", MultipartFormData(formData))) map {
           case Result(true, message) => Some(message)
         } recover {
-          case e => println(e); None
+          case e => None
         }
 
       case SendDocumentRequest(_, Right(fileId), _, _) =>
@@ -229,7 +229,7 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
         pipeline(Post(apiUrl + "sendSticker", MultipartFormData(formData))) map {
           case Result(true, message) => Some(message)
         } recover {
-          case e => println(e); None
+          case e => None
         }
 
       case SendStickerRequest(_, Right(fileId), _, _) =>
