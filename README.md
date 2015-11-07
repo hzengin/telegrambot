@@ -7,7 +7,7 @@
 - Fully asynchronous
 - [spray.io](spray.io) powered.
 - Declerative DSL for simple bot features
-- Strongly-typed 
+- Strongly-typed
 
 ## Supported Methods
 - getMe
@@ -55,6 +55,28 @@ object GreeterBot extends TelegramBot with Polling with Declerative {
 object GreeterBot extends TelegramBot with Polling with Declerative {
   on("/start") { implicit message: Message =>
     sendPhoto("~/image.jpg")
+  }
+}
+```
+
+#### When You Need More Power
+```scala
+object GreeterBot extends TelegramBot with Polling with Declerative {
+  when { message =>
+    message.photo match {
+      case Some(photo) => true
+      case None => false
+    }
+  } perform { implicit message =>
+    reply("Nice Smile!")
+  }
+}
+```
+#### "Cuckoo Clock?" Why Not?
+```scala
+object GreeterBot extends TelegramBot with Polling with Declerative {
+  every(1 hours) {
+    
   }
 }
 ```
