@@ -15,4 +15,9 @@ object BotConfig {
     val keystore = webhookConfig.getString("keystore")
     val keystorePassword = webhookConfig.getString("keystorePassword")
   }
+
+  object PollingConfig {
+    private val pollingConfig = config.getConfig("telegram-bot.polling")
+    val interval = pollingConfig.getInt("interval")
+  }
 }
