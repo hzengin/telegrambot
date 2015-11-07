@@ -1,6 +1,5 @@
 # scala-telegram-bot
-![Travis CI Build Status](https://magnum.travis-ci.com/hzengin/scala-telegram-bot.svg?token=Eu31bmPEzUsSvufqwvjh&branch=master)
-
+[![Build Status](https://magnum.travis-ci.com/hzengin/telegrambot.svg?token=Eu31bmPEzUsSvufqwvjh&branch=master)](https://magnum.travis-ci.com/hzengin/telegrambot)
 "Batteries Included" Telegram Bot API wrapper for Scala
 
 ### Features
