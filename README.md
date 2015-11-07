@@ -2,7 +2,9 @@
 [![Build Status](https://magnum.travis-ci.com/hzengin/telegrambot.svg?token=Eu31bmPEzUsSvufqwvjh&branch=master)](https://magnum.travis-ci.com/hzengin/telegrambot)
 "Batteries Included" Telegram Bot API wrapper for Scala
 
-### Features
+
+
+## Features
 - Fully asynchronous
 - [spray.io](spray.io) powered.
 - Declerative DSL for simple bot features
@@ -28,6 +30,14 @@
 
 ## TODO
  - Built-in Webhook support
+ - Better error handling
+ - Documentation
+
+## Configuration
+Check [reference.conf](https://github.com/hzengin/telegrambot/blob/master/src/main/resources/reference.conf) for configuration.
+
+## Installation
+There is no release yet; project still lack too much improvement. Wait for updates.
 
 ## Usage
 #### Simple commands + simple answers
@@ -75,7 +85,7 @@ object GreeterBot extends TelegramBot with Polling with Declerative {
 ```scala
 object GreeterBot extends TelegramBot with Polling with Declerative {
   every(1 hours) {
-    
+    send("Ping!", 31415926535)
   }
 }
 ```
