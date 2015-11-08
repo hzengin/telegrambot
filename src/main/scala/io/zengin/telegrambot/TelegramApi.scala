@@ -12,7 +12,6 @@ import spray.client.pipelining._
 import scala.concurrent.ExecutionContext.Implicits.global
 import spray.http.{MediaTypes, BodyPart, MultipartFormData, ContentTypes, FormData, HttpHeaders, FormFile, HttpData}
 import spray.http.HttpEntity._
-import spray.http.HttpEntity
 import spray.httpx.UnsuccessfulResponseException
 import spray.httpx.unmarshalling._
 import spray.http._
@@ -37,11 +36,13 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
       case spray.http.StatusCodes.Success(_) => response.as[R] match {
         case Right(value) => Left(value)
         case Left(error) => throw new Exception(error.toString)
+        case error => throw new Exception(error.toString)
       }
 
       case spray.http.StatusCodes.ClientError(_) => response.as[E] match {
         case Right(value) => Right(value)
         case Left(error) => throw new Exception(error.toString)
+        case error => throw new Exception(error.toString)
       }
 
       case error => throw new Exception(error.toString)
@@ -72,7 +73,8 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
     val pipeline = sendReceive ~> failureAwareUnmarshal[Result[Message], FailResult]
     pipeline (Post(apiUrl + "sendMessage", request)) map {
       case Left(Result(true, message)) => Left(message)
-      case Right(result) => Right(result)
+      case Right(failResult) => Right(failResult)
+      case error => throw new Exception(error.toString)
     }
   }
 
@@ -159,6 +161,8 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
         } recover {
           case e => None
         }
+
+      case _ => Future { None }
     }
   }
 
@@ -194,6 +198,8 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
         } recover {
           case e => None
         }
+
+      case _ => Future { None }
       }
   }
 

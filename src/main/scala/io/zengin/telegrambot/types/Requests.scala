@@ -25,6 +25,8 @@ object RequestsJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
         "hide_keyboard" -> JsBoolean(true),
         "selective" -> selective.toJson
       )
+
+      case _ => JsObject()
     }
 
     def read(v: JsValue) = ForceReply() // TODO: implement this unnecessary feature

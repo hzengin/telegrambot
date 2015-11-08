@@ -59,6 +59,7 @@ trait Declerative {
       message.chat match {
         case Left(user) => SendMessageRequest(Right(user.id), text)
         case Right(groupChat) =>SendMessageRequest(Left(groupChat.id), text)
+        case _ => throw new Exception("")
       }
     )
   }
@@ -68,6 +69,7 @@ trait Declerative {
       message.chat match {
         case Left(user) => SendPhotoRequest(Right(user.id), Left(InputFile(path)), caption)
         case Right(groupChat) =>SendPhotoRequest(Left(groupChat.id), Left(InputFile(path)), caption)
+        case _ => throw new Exception("")
       }
     )
   }
