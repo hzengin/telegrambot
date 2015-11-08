@@ -8,7 +8,7 @@ import io.zengin.telegrambot.utils._
 import akka.actor.{ActorSystem, Props}
 import scala.concurrent.duration.FiniteDuration
 
-trait Declerative {
+trait Declarative {
   val updateHandler: UpdateHandler
   val telegramApi: TelegramApi
 

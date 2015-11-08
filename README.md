@@ -9,7 +9,7 @@
 ## Features
 - Fully asynchronous
 - [spray.io](spray.io) powered.
-- Declerative DSL for simple bot features
+- Declarative DSL for simple bot features
 - Strongly-typed
 
 ## Supported Methods
@@ -44,7 +44,7 @@ There is no release yet; project still lack too much improvement. Wait for updat
 ## Usage
 #### Simple commands + simple answers
 ```scala
-object GreeterBot extends TelegramBot with Polling with Declerative {
+object GreeterBot extends TelegramBot with Polling with Declarative {
   on("/start") { implicit message: Message =>
     reply("Welcome")
   }
@@ -52,7 +52,7 @@ object GreeterBot extends TelegramBot with Polling with Declerative {
 ```
 #### Using received message
 ```scala
-object GreeterBot extends TelegramBot with Polling with Declerative {
+object GreeterBot extends TelegramBot with Polling with Declarative {
   on("/start") { implicit message: Message =>
     message.from match {
       case Some(user) => reply("Welcome, " + user.firstName)
@@ -63,7 +63,7 @@ object GreeterBot extends TelegramBot with Polling with Declerative {
 ```
 #### Sending photos
 ```scala
-object GreeterBot extends TelegramBot with Polling with Declerative {
+object GreeterBot extends TelegramBot with Polling with Declarative {
   on("/start") { implicit message: Message =>
     sendPhoto("~/image.jpg")
   }
@@ -72,7 +72,7 @@ object GreeterBot extends TelegramBot with Polling with Declerative {
 
 #### When You Need More Power
 ```scala
-object GreeterBot extends TelegramBot with Polling with Declerative {
+object GreeterBot extends TelegramBot with Polling with Declarative {
   when { message =>
     message.photo match {
       case Some(photo) => true
@@ -85,7 +85,7 @@ object GreeterBot extends TelegramBot with Polling with Declerative {
 ```
 #### "Cuckoo Clock?" Why Not?
 ```scala
-object GreeterBot extends TelegramBot with Polling with Declerative {
+object GreeterBot extends TelegramBot with Polling with Declarative {
   every(1 hours) {
     sendTo("Ping!", 31415926535)
   }
@@ -94,7 +94,7 @@ object GreeterBot extends TelegramBot with Polling with Declerative {
 
 #### Sending Messages Not Always Successful
 ```scala
-object TestBot extends TelegramBot with Polling with Declerative {
+object TestBot extends TelegramBot with Polling with Declarative {
   sendTo("test", 1093654812) map {
     case Left(message) =>
       println(message);
