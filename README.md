@@ -89,3 +89,17 @@ object GreeterBot extends TelegramBot with Polling with Declerative {
   }
 }
 ```
+
+#### Sending Messages Not Always Successful
+```scala
+object TestBot extends TelegramBot with Polling with Declerative {
+  sendTo("test", 1093654812) map {
+    case Left(message) =>
+      println(message);
+    case Right(error) if error.code == 403 =>
+      println("No, we are not allowed to send messages to this chat");
+    case Right(error) if error.code == 400 =>
+      println("No, chat doesn't exists");
+  }
+}
+```
