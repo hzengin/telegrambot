@@ -1,7 +1,6 @@
 package io.zengin.telegrambot.types
 
-import java.io.{FileInputStream, InputStream}
-import java.io.{File => JFile}
+import java.io.{FileInputStream, InputStream, File => JFile}
 
 trait InputFile {
   val name: String
