@@ -17,3 +17,6 @@ project/sbt-ui.sbt
 
 # Activator specific
 activator*
+
+# Hide Sensitive Info
+src/main/resources/application.conf

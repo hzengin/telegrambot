@@ -41,6 +41,6 @@ object TypesJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
       "delete_chat_photo",
       "group_chat_created"))
   implicit val updateFormat = jsonFormat(Update, "update_id", "message")
+  implicit val failResultFormat = jsonFormat(FailResult, "ok", "error_code", "description")
   implicit def resultFormat[T: JsonFormat] = jsonFormat(Result.apply[T], "ok", "result")
-
 }

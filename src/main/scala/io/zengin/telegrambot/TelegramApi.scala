@@ -13,6 +13,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import spray.http.{MediaTypes, BodyPart, MultipartFormData, ContentTypes, FormData, HttpHeaders, FormFile, HttpData}
 import spray.http.HttpEntity._
 import spray.http.HttpEntity
+import spray.httpx.UnsuccessfulResponseException
+import spray.httpx.unmarshalling._
+import spray.http._
 
 class TelegramApi(token: String, implicit val system: ActorSystem) {
   import io.zengin.telegrambot.types.TypesJsonSupport._
@@ -27,6 +30,22 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
 
   private def buildParameterBodyPart(key: String, value: String) = {
     BodyPart(value, Seq(HttpHeaders.`Content-Disposition`("form-data", Map("name" -> key)) ))
+  }
+
+  private def failureAwareUnmarshal[R: FromResponseUnmarshaller, E: FromResponseUnmarshaller]: HttpResponse => Either[R, E] = { response =>
+    response.status match {
+      case spray.http.StatusCodes.Success(_) => response.as[R] match {
+        case Right(value) => Left(value)
+        case Left(error) => throw new Exception(error.toString)
+      }
+
+      case spray.http.StatusCodes.ClientError(_) => response.as[E] match {
+        case Right(value) => Right(value)
+        case Left(error) => throw new Exception(error.toString)
+      }
+
+      case error => throw new Exception(error.toString)
+    }
   }
 
   def getMe(): Future[Option[User]] = {
@@ -49,12 +68,11 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
     }
   }
 
-  def sendMessage(request: SendMessageRequest): Future[Option[Message]] = {
-    val pipeline = sendReceive ~> unmarshal[Result[Message]]
+  def sendMessage(request: SendMessageRequest): Future[Either[Message, FailResult]] = {
+    val pipeline = sendReceive ~> failureAwareUnmarshal[Result[Message], FailResult]
     pipeline (Post(apiUrl + "sendMessage", request)) map {
-      case Result(true, message) => Some(message)
-    } recover {
-      case e => None
+      case Left(Result(true, message)) => Left(message)
+      case Right(result) => Right(result)
     }
   }
 
