@@ -1,5 +1,7 @@
 # scala-telegram-bot
-[![Build Status](https://travis-ci.org/hzengin/telegrambot.svg)](https://travis-ci.org/hzengin/telegrambot)"Batteries Included" Telegram Bot API wrapper for Scala
+[![Build Status](https://travis-ci.org/hzengin/telegrambot.svg)](https://travis-ci.org/hzengin/telegrambot)
+
+"Batteries Included" Telegram Bot API wrapper for Scala
 
 
 
@@ -84,7 +86,7 @@ object GreeterBot extends TelegramBot with Polling with Declerative {
 ```scala
 object GreeterBot extends TelegramBot with Polling with Declerative {
   every(1 hours) {
-    send("Ping!", 31415926535)
+    sendTo("Ping!", 31415926535)
   }
 }
 ```
