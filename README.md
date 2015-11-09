@@ -96,11 +96,11 @@ object GreeterBot extends TelegramBot with Polling with Declarative {
 ```scala
 object TestBot extends TelegramBot with Polling with Declarative {
   sendTo("test", 1093654812) map {
-    case Left(message) =>
+    case Right(message) =>
       println(message);
-    case Right(error) if error.code == 403 =>
+    case Left(error) if error.code == 403 =>
       println("No, we are not allowed to send messages to this chat");
-    case Right(error) if error.code == 400 =>
+    case Left(error) if error.code == 400 =>
       println("No, chat doesn't exists");
   }
 }

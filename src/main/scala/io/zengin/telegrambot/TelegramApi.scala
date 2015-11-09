@@ -31,16 +31,16 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
     BodyPart(value, Seq(HttpHeaders.`Content-Disposition`("form-data", Map("name" -> key)) ))
   }
 
-  private def failureAwareUnmarshal[R: FromResponseUnmarshaller, E: FromResponseUnmarshaller]: HttpResponse => Either[R, E] = { response =>
+  private def failureAwareUnmarshal[E: FromResponseUnmarshaller, R: FromResponseUnmarshaller]: HttpResponse => Either[E, R] = { response =>
     response.status match {
       case spray.http.StatusCodes.Success(_) => response.as[R] match {
-        case Right(value) => Left(value)
+        case Right(value) => Right(value)
         case Left(error) => throw new Exception(error.toString)
         case error => throw new Exception(error.toString)
       }
 
       case spray.http.StatusCodes.ClientError(_) => response.as[E] match {
-        case Right(value) => Right(value)
+        case Right(value) => Left(value)
         case Left(error) => throw new Exception(error.toString)
         case error => throw new Exception(error.toString)
       }
@@ -69,11 +69,11 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
     }
   }
 
-  def sendMessage(request: SendMessageRequest): Future[Either[Message, FailResult]] = {
-    val pipeline = sendReceive ~> failureAwareUnmarshal[Result[Message], FailResult]
+  def sendMessage(request: SendMessageRequest): Future[Either[FailResult, Message]] = {
+    val pipeline = sendReceive ~> failureAwareUnmarshal[FailResult, Result[Message]]
     pipeline (Post(apiUrl + "sendMessage", request)) map {
-      case Left(Result(true, message)) => Left(message)
-      case Right(failResult) => Right(failResult)
+      case Right(Result(true, message)) => Right(message)
+      case Left(failResult) => Left(failResult)
       case error => throw new Exception(error.toString)
     }
   }
