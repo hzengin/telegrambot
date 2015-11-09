@@ -1,6 +1,5 @@
 # scala-telegram-bot
-[![Build Status](https://travis-ci.org/hzengin/telegrambot.svg)](https://travis-ci.org/hzengin/telegrambot)
-[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://travis-ci.org/hzengin/telegrambot.svg)](https://travis-ci.org/hzengin/telegrambot) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 "Batteries Included" Telegram Bot API wrapper for Scala
 
