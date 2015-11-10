@@ -1,9 +1,7 @@
-# scala-telegram-bot
+# telegrambot
 [![Build Status](https://travis-ci.org/hzengin/telegrambot.svg)](https://travis-ci.org/hzengin/telegrambot) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 "Batteries Included" Telegram Bot API wrapper for Scala
-
-
 
 ## Features
 - Fully asynchronous
@@ -101,6 +99,14 @@ object TestBot extends TelegramBot with Polling with Declarative {
       println("No, we are not allowed to send messages to this chat");
     case Left(error) if error.code == 400 =>
       println("No, chat doesn't exists");
+  }
+}
+```
+
+#### Keep user informed!
+```scala
+on("Welcome") { implicit message =>
+  typing; reply("typed.")
   }
 }
 ```

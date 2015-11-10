@@ -1,7 +1,7 @@
 package io.zengin.telegrambot
 
 import io.zengin.telegrambot.types.{Update, User, Message, InputFile}
-import io.zengin.telegrambot.types.requests.{SendMessageRequest, SendPhotoRequest}
+import io.zengin.telegrambot.types.requests.{SendMessageRequest, SendPhotoRequest, SendChatActionRequest}
 import io.zengin.telegrambot.webhook._
 import io.zengin.telegrambot.utils._
 
@@ -95,5 +95,24 @@ trait Declarative {
   def every(interval: FiniteDuration)(action: => Unit)(implicit system: ActorSystem) = {
     system.actorOf(Props(new PeriodicActor(interval, action)))
   }
+
+  def typing(implicit message: Message) = {
+    telegramApi.sendChatAction(
+      message.chat match {
+        case Left(user) => SendChatActionRequest(Right(user.id), "typing")
+        case Right(groupChat) => SendChatActionRequest(Left(groupChat.id), "typing")
+      }
+    )
+  }
+
+  def uploadingPhoto(implicit message: Message) = {
+    telegramApi.sendChatAction(
+      message.chat match {
+        case Left(user) => SendChatActionRequest(Right(user.id), "upload_photo")
+        case Right(groupChat) => SendChatActionRequest(Left(groupChat.id), "upload_photo")
+      }
+    )
+  }
+
 
 }
