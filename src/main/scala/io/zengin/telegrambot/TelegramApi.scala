@@ -17,6 +17,9 @@ import spray.httpx.unmarshalling._
 import spray.http._
 
 class TelegramApi(token: String, implicit val system: ActorSystem) {
+
+  case class MarshallingException(message: String) extends Exception
+
   import io.zengin.telegrambot.types.TypesJsonSupport._
 
   private val apiUrl = s"https://api.telegram.org/bot$token/"
@@ -35,17 +38,17 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
     response.status match {
       case spray.http.StatusCodes.Success(_) => response.as[R] match {
         case Right(value) => Right(value)
-        case Left(error) => throw new Exception(error.toString)
-        case error => throw new Exception(error.toString)
+        case Left(error) => throw new MarshallingException(error.toString)
+        case error => throw new MarshallingException(error.toString)
       }
 
       case spray.http.StatusCodes.ClientError(_) => response.as[E] match {
         case Right(value) => Left(value)
-        case Left(error) => throw new Exception(error.toString)
-        case error => throw new Exception(error.toString)
+        case Left(error) => throw new MarshallingException(error.toString)
+        case error => throw new MarshallingException(error.toString)
       }
 
-      case error => throw new Exception(error.toString)
+      case error => throw new MarshallingException(error.toString)
     }
   }
 
