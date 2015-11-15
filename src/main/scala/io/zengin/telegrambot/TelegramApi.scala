@@ -23,6 +23,7 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   import io.zengin.telegrambot.types.TypesJsonSupport._
 
   private val apiUrl = s"https://api.telegram.org/bot$token/"
+  private val fileUrl = s"https://api.telegram.org/file/bot$token/"
 
   private def buildFileBodyPart(key: String, file: InputFile) = {
     val httpData = HttpData(file.bytes)
@@ -52,14 +53,11 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
     }
   }
 
-  def getMe(): Future[Option[User]] = {
-    val pipeline = sendReceive ~> unmarshal[Result[User]]
+  def getMe(): Future[Either[FailResult, User]] = {
+    val pipeline = sendReceive ~> failureAwareUnmarshal[FailResult, Result[User]]
     pipeline (Get(apiUrl + "getMe")) map {
-      case Result(true, result: User) => Some(result)
-      case Result(false, _) => None
-      case _ => None
-    } recover {
-      case e => None
+      case Right(Result(true, user)) => Right(user)
+      case Left(failResult) => Left(failResult)
     }
   }
 
@@ -77,21 +75,22 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
     pipeline (Post(apiUrl + "sendMessage", request)) map {
       case Right(Result(true, message)) => Right(message)
       case Left(failResult) => Left(failResult)
-      case error => throw new Exception(error.toString)
     }
   }
 
-  def sendChatAction(request: SendChatActionRequest) = {
-    val pipeline = sendReceive ~> unmarshal[Result[Boolean]]
-    pipeline (Post(apiUrl + "sendChatAction", request))
+  def sendChatAction(request: SendChatActionRequest): Future[Either[FailResult, Boolean]] = {
+    val pipeline = sendReceive ~> failureAwareUnmarshal[FailResult, Result[Boolean]]
+    pipeline (Post(apiUrl + "sendChatAction", request)) map {
+      case Right(Result(true, true)) => Right(true)
+      case Left(failResult) => Left(failResult)
+    }
   }
 
-  def sendLocation(request: SendLocationRequest): Future[Option[Message]] = {
-    val pipeline = sendReceive ~> unmarshal[Result[Message]]
+  def sendLocation(request: SendLocationRequest): Future[Either[FailResult, Message]] = {
+    val pipeline = sendReceive ~> failureAwareUnmarshal[FailResult, Result[Message]]
     pipeline (Post(apiUrl + "sendLocation", request)) map {
-      case Result(true, message) => Some(message)
-    } recover {
-      case e => None
+      case Right(Result(true, message)) => Right(message)
+      case Left(failResult) => Left(failResult)
     }
   }
 
