@@ -1,7 +1,7 @@
 package io.zengin.telegrambot
 
 import io.zengin.telegrambot.types.{Update, User, Message, InputFile}
-import io.zengin.telegrambot.types.requests.{SendMessageRequest, SendPhotoRequest, SendChatActionRequest}
+import io.zengin.telegrambot.types.requests.{SendMessageRequest, SendPhotoRequest, SendChatActionRequest, ForwardMessageRequest}
 import io.zengin.telegrambot.webhook._
 import io.zengin.telegrambot.utils._
 
@@ -114,5 +114,22 @@ trait Declarative {
     )
   }
 
+  def forwardTo(to: String)(implicit message: Message) = {
+    telegramApi.forwardMessage(
+      message.chat match {
+        case Left(user) => ForwardMessageRequest(Left(to), Right(user.id), message.id)
+        case Right(groupChat) => ForwardMessageRequest(Left(to), Left(groupChat.id), message.id)
+      }
+    )
+  }
+
+  def forwardTo(to: Int)(implicit message: Message) = {
+    telegramApi.forwardMessage(
+      message.chat match {
+        case Left(user) => ForwardMessageRequest(Right(to), Right(user.id), message.id)
+        case Right(groupChat) => ForwardMessageRequest(Right(to), Left(groupChat.id), message.id)
+      }
+    )
+  }
 
 }
