@@ -81,7 +81,7 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   def sendChatAction(request: SendChatActionRequest): Future[Either[FailResult, Boolean]] = {
     val pipeline = sendReceive ~> failureAwareUnmarshal[FailResult, Result[Boolean]]
     pipeline (Post(apiUrl + "sendChatAction", request)) map {
-      case Right(Result(true, true)) => Right(true)
+      case Right(Result(true, true)) => Right(true) // yes this is ugly
       case Left(failResult) => Left(failResult)
     }
   }
@@ -95,32 +95,27 @@ class TelegramApi(token: String, implicit val system: ActorSystem) {
   }
 
 
-  def getFile(id: String): Future[Option[File]] = {
-    val pipeline = sendReceive  ~> unmarshal[Result[File]]
+  def getFile(id: String): Future[Either[FailResult, File]] = {
+    val pipeline = sendReceive  ~> failureAwareUnmarshal[FailResult, Result[File]]
     pipeline(Get(apiUrl + "getFile?file_id=" + id)) map {
-      case Result(true, file) => Some(file)
-      case _ => None
-    } recover {
-      case _ => None
+      case Right(Result(true, file)) => Right(file)
+      case Left(failResult) => Left(failResult)
     }
   }
 
-  def getUserProfilePhotos(userId: Int): Future[Option[UserProfilePhotos]] = {
-    val pipeline = sendReceive  ~> unmarshal[Result[UserProfilePhotos]]
+  def getUserProfilePhotos(userId: Int): Future[Either[FailResult, UserProfilePhotos]] = {
+    val pipeline = sendReceive  ~> failureAwareUnmarshal[FailResult, Result[UserProfilePhotos]]
     pipeline(Get(apiUrl + s"getUserProfilePhotos?user_id=$userId")) map {
-      case Result(true, photos) => Some(photos)
-      case _ => None
-    } recover {
-      case _ => None
+      case Right(Result(true, userProfilePhotos)) => Right(userProfilePhotos)
+      case Left(failResult) => Left(failResult)
     }
   }
 
-  def forwardMessage(request: ForwardMessageRequest): Future[Option[Message]] = {
-    val pipeline = sendReceive ~> unmarshal[Result[Message]]
+  def forwardMessage(request: ForwardMessageRequest): Future[Either[FailResult, Message]] = {
+    val pipeline = sendReceive ~> failureAwareUnmarshal[FailResult, Result[Message]]
     pipeline (Post(apiUrl + "forwardMessage", request)) map {
-      case Result(true, message) => Some(message)
-    } recover {
-      case e => None
+      case Right(Result(true, message)) => Right(message)
+      case Left(failResult) => Left(failResult)
     }
   }
 
